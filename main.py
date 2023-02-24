@@ -40,11 +40,11 @@ def printing_display(stats):
     eta_seconds = stats["eta"]
     
     if (eta_seconds == 0):
-        eta_text = stats["state"]
+        eta_text = "     ..."
     else:
         minutes, seconds = divmod(eta_seconds, 60)
         hours, minutes = divmod(minutes, 60)
-        eta_text = "%02d:%02d:%02d" % (hours, minutes, seconds)
+        eta_text = "%01d:%02d:%02d" % (hours, minutes, seconds)
         
     
     display.fill(0)
@@ -52,7 +52,7 @@ def printing_display(stats):
     row2 = stats["filename"]
     row3 = eta_text
     
-    screen1 = [[0, 12, row2, True], [0,24, "ETA", False], [64, 24, row3, False]]
+    screen1 = [[0, 12, row2, True], [0,24, "ETA", False], [72, 24, row3, False]]
     
     scroll_in_screen_with_static(screen1, 2, draw_progress_bar, stats["progress"])
     
@@ -66,27 +66,25 @@ def loading_display():
 
 def standby_display(stats):
 
-    stats['extruder']['temperature'] = 210
-    stats['extruder']['target'] = 210
-    
-    stats['bed']['temperature'] = 80
-    stats['bed']['target'] = 80
-    extruder = f"{stats['extruder']['temperature']:.0f}/{stats['extruder']['target']:.0f}"
-    bed = f"{stats['bed']['temperature']:.0f}/{stats['bed']['target']:.0f}"
+
+    extruder = f"{stats['extruder']['temperature']:.0f}/{stats['extruder']['target']:0}"
+    bed = f"{stats['bed']['temperature']:.0f}/{stats['bed']['target']:0}"
     
     screen1_row1 = "Standby"
     screen1_row2 = stats['filename']
     screen1_row3_label = "Extruder"
     screen1_row3 = extruder
+    screen1_row3_offset = 128-len(extruder)*8
     screen1_row4_label = "Bed"
+    screen1_row4_offset = 128-len(bed)*8
     screen1_row4 = bed
     screen1 = [
         [0, 0, screen1_row1, False],
         [0, 8, screen1_row2, True],
         [0, 16, screen1_row3_label, False],
-        [72, 16, screen1_row3, False],
+        [screen1_row3_offset, 16, screen1_row3, False],
         [0, 24, screen1_row4_label, False],
-        [88, 24, screen1_row4, False]
+        [screen1_row4_offset, 24, screen1_row4, False]
     ]
     
     scroll_in_screen(screen1, 1)
